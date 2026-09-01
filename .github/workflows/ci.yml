@@ -41,8 +41,8 @@ jobs:
       - name: Ruff lint
         run: ruff check src/ tests/
 
-      - name: Mypy typecheck
-        run: mypy src/ogentic_converter/
+      - name: Mypy typecheck (strict)
+        run: mypy --strict src/ogentic_converter/
 
       - name: Pytest with coverage
         # --cov-report=xml so a future codecov step can consume it;
