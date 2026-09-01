@@ -1,0 +1,64 @@
+# ─── OGE-1183 — CI: lint + typecheck + tests on every push and PR ─────────────
+# Quality gates:
+#   - ruff lint clean
+#   - mypy strict typecheck
+#   - pytest passes
+#   - coverage ≥70% (advisory in v0.1.0; enforce after)
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-flight runs on the same branch when a new commit lands.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint + typecheck + tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install ogentic-converter + dev deps
+        # Editable install with the [dev] extras: pytest + ruff + mypy.
+        run: pip install -e ".[dev]"
+
+      - name: Ruff lint
+        run: ruff check src/ tests/
+
+      - name: Mypy typecheck (strict)
+        run: mypy --strict src/ogentic_converter/
+
+      - name: Pytest with coverage
+        # --cov-report=xml so a future codecov step can consume it;
+        # --cov-report=term-missing for human-readable PR logs.
+        run: |
+          pytest tests/ -v \
+            --cov=ogentic_converter \
+            --cov-report=xml \
+            --cov-report=term-missing
+
+      - name: Upload coverage XML
+        # Stored as a build artefact so reviewers can drill in even
+        # without a third-party coverage service. 7-day retention.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          retention-days: 7
