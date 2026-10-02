@@ -38,6 +38,7 @@ pip install -e ".[dev]"
 # run
 ogentic-converter convert --entities shield.json --policy legal --mapping out.json < in.txt
 ogentic-converter restore --mapping out.json < reply.txt
+ogentic-converter convert --json < request.json   # JSON in/out, mapping on stdout: never redirect to a file
 
 # tests
 pytest --cov=ogentic_converter

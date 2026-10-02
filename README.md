@@ -87,6 +87,39 @@ echo "Y. Southwell should confirm SSN 928-43-3243 by writing to imani.sheringham
 - Errors and warnings go to stderr with a non-zero exit code, and never quote the input.
   If any categories are left unconverted, `convert` prints a warning naming them.
 
+### JSON mode (for embedding in another process)
+
+A parent process that holds the mapping in memory, and never writes the originals to
+disk, can use `--json` on either subcommand. Each call takes one JSON object on stdin
+and returns one JSON object on stdout. No file is written.
+
+```bash
+ogentic-converter convert --json   # stdin:  {"text": str,
+                                    #          "entities": <Shield analyze JSON object, or a bare entity list>,
+                                    #          "policy": "legal"|"clinical"|"financial"|"generic",  (default "generic")
+                                    #          "seed": int|null}                                     (default null = random)
+                                    # stdout: {"replica": str, "mapping": <ReversalMapping>,
+                                    #          "converted_count": int, "unconverted_categories": [str]}
+
+ogentic-converter restore --json   # stdin:  {"text": str, "mapping": <ReversalMapping, as returned by convert>}
+                                    # stdout: {"text": str}
+```
+
+> **Warning: `--json` stdout carries the original values.** The `mapping` object
+> contains every original identifier. The output is meant for a parent process that
+> keeps it in memory. Never redirect it to a file, a log or a terminal you record. This
+> is why `--json` is opt-in, and why the file mode with its `0600` mapping file is the
+> default.
+
+- Unknown request fields are rejected.
+- `--json` cannot be combined with the file-mode flags (`--entities`, `--mapping`,
+  `--policy` and `--seed` on `convert`; `--mapping` on `restore`). Combining them is a
+  usage error with exit code 2, so the mapping has exactly one channel.
+- Entities may omit `text` and work from offsets alone. When `text` is present, it must
+  match the text at those offsets.
+- On any failure, stdout is empty, the exit code is non-zero, and stderr gives a
+  sanitised message that never quotes the input.
+
 ## What gets replaced
 
 | Shield category | Synthetic value |

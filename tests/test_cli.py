@@ -121,7 +121,7 @@ def test_missing_and_invalid_mapping_files_fail_cleanly(
     bad = tmp_path / "bad.json"
     bad.write_text('{"entries": [{"synthetic": "A"}]}')
     code, stdout = run(monkeypatch, ["restore", "--mapping", str(bad)], "x")
-    assert code == 1 and stdout == b"" and "not a valid" in capsys.readouterr().err
+    assert code == 1 and stdout == b"" and "mapping file is invalid" in capsys.readouterr().err
 
 
 def test_non_utf8_stdin_fails_cleanly(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

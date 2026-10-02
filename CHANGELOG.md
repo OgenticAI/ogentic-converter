@@ -30,5 +30,8 @@ and no network access.
 - Versioned synthetic corpus (`corpus_v1.json`) shipped as package data.
 - `ogentic-converter convert` / `restore` CLI. The replica goes to stdout byte for
   byte. The mapping goes to an owner-only (`0600`) file that is never overwritten.
+- `--json` mode on `convert` and `restore`: one JSON request on stdin and one JSON result
+  on stdout, mapping included, with no file written. It is for parent processes that
+  keep the mapping in memory. Opt-in; mixing it with file-mode flags is a usage error.
 - Release workflow: sdist and universal wheel, a tag/version check, and PyPI trusted
   publishing.
