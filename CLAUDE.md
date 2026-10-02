@@ -33,16 +33,21 @@ Keep it 100-300 lines. Every rule earns its place.
 
 ```
 # install
-# (fill in once the build system is initialised)
+pip install -e ".[dev]"
 
 # run
-# (fill in once the entry point exists)
+ogentic-converter convert --entities shield.json --policy legal --mapping out.json < in.txt
+ogentic-converter restore --mapping out.json < reply.txt
 
 # tests
-# (fill in)
+pytest --cov=ogentic_converter
 
 # typecheck + lint
-# (fill in)
+ruff check src/ tests/
+mypy --strict src/ogentic_converter/
+
+# build (sdist + universal wheel)
+python -m build
 ```
 
 ---
