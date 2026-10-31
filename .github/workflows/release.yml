@@ -1,0 +1,85 @@
+# Publish ogentic-converter to PyPI when a v* tag is pushed.
+#
+# Trusted publishing (OIDC): no API token or password is stored anywhere. The PyPI
+# publisher is registered for this repository, workflow `release.yml`, environment `pypi`.
+#
+# Pure-Python package: one sdist + one universal wheel (py3-none-any), no platform matrix.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build sdist + wheel
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade build twine
+
+      - name: Build
+        run: python -m build
+
+      - name: Verify tag matches package version
+        # The built filenames carry the version hatch read from __init__.__version__,
+        # so this checks the artefacts actually being published, not a copy of the number.
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          ls dist/
+          test -f "dist/ogentic_converter-${VERSION}.tar.gz" \
+            || { echo "::error::sdist for ${VERSION} not found; tag ${GITHUB_REF_NAME} does not match __version__"; exit 1; }
+          test -f "dist/ogentic_converter-${VERSION}-py3-none-any.whl" \
+            || { echo "::error::universal wheel for ${VERSION} not found; tag ${GITHUB_REF_NAME} does not match __version__"; exit 1; }
+          test "$(ls dist | wc -l)" -eq 2 || { echo "::error::expected exactly one sdist and one wheel"; exit 1; }
+
+      - name: Check metadata
+        run: python -m twine check --strict dist/*
+
+      - name: Smoke-test the wheel
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/pip install dist/*.whl
+          /tmp/smoke/bin/ogentic-converter --version
+          /tmp/smoke/bin/python -c "import ogentic_converter as c; print(c.convert('Hi Ann Lee.', [{'category': 'PERSON', 'start': 3, 'end': 10}], seed=1).replica)"
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/ogentic-converter/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
