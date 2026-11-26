@@ -1,0 +1,136 @@
+{
+  "text_hash": "sha256:a540260ead4e6eff",
+  "score": 100,
+  "sensitivity_level": "CRITICAL",
+  "routing_suggestion": "LOCAL_ONLY",
+  "entity_count": 13,
+  "processing_time_ms": 626.2,
+  "layers_invoked": [
+    "REGEX",
+    "NER",
+    "RULES"
+  ],
+  "profiles_active": [
+    "shield-legal",
+    "shield-therapy"
+  ],
+  "entities": [
+    {
+      "text": "PRIVILEGED AND CONFIDENTIAL",
+      "category": "PRIVILEGE_MARKER",
+      "category_group": "PRIVILEGE",
+      "confidence": 0.97,
+      "detection_layer": "REGEX",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "text": "PRIVILEGED",
+      "category": "PRIVILEGE_MARKER",
+      "category_group": "PRIVILEGE",
+      "confidence": 1.0,
+      "detection_layer": "RULES",
+      "start": 0,
+      "end": 10
+    },
+    {
+      "text": "Attorney-client",
+      "category": "COUNSEL_COMMUNICATION",
+      "category_group": "PRIVILEGE",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 29,
+      "end": 44
+    },
+    {
+      "text": "R. Castellanos",
+      "category": "PERSON",
+      "category_group": "PII",
+      "confidence": 0.85,
+      "detection_layer": "NER",
+      "start": 65,
+      "end": 79
+    },
+    {
+      "text": "24-cv-01234",
+      "category": "CASE_NUMBER",
+      "category_group": "PII",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 95,
+      "end": 106
+    },
+    {
+      "text": "deposition",
+      "category": "COURT_FILING",
+      "category_group": "CONFIDENTIAL",
+      "confidence": 0.88,
+      "detection_layer": "REGEX",
+      "start": 112,
+      "end": 122
+    },
+    {
+      "text": "Maria Okafor",
+      "category": "PERSON",
+      "category_group": "PII",
+      "confidence": 0.85,
+      "detection_layer": "NER",
+      "start": 126,
+      "end": 138
+    },
+    {
+      "text": "DOB 03/14/1978",
+      "category": "DATE_OF_BIRTH",
+      "category_group": "PHI",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 140,
+      "end": 154
+    },
+    {
+      "text": "SSN 412-71-3359",
+      "category": "SSN",
+      "category_group": "PII",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 156,
+      "end": 171
+    },
+    {
+      "text": "Okafor",
+      "category": "PERSON",
+      "category_group": "PII",
+      "confidence": 0.85,
+      "detection_layer": "NER",
+      "start": 185,
+      "end": 191
+    },
+    {
+      "text": "maria.okafor@acme-legal.com",
+      "category": "EMAIL_ADDRESS",
+      "category_group": "PII",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 210,
+      "end": 237
+    },
+    {
+      "text": "Jos\u00e9 M\u00fcller",
+      "category": "PERSON",
+      "category_group": "PII",
+      "confidence": 0.85,
+      "detection_layer": "NER",
+      "start": 239,
+      "end": 250
+    },
+    {
+      "text": "SSN 523-45-6789",
+      "category": "SSN",
+      "category_group": "PII",
+      "confidence": 1.0,
+      "detection_layer": "REGEX",
+      "start": 253,
+      "end": 268
+    }
+  ]
+}
